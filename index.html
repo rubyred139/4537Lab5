@@ -59,7 +59,7 @@
                     })
                 });
                 const responseData = await response.json();
-                responseElement.innerHTML = JSON.stringify(responseData.message);
+                responseElement.innerHTML = responseData.message.replace(/'/g, '"');
             } catch (error) {
                 responseElement.innerHTML = 'Error: ' + error.message;
             }
@@ -99,7 +99,7 @@
                 })
             });
             const responseData = await response.json();
-            responseElement.innerHTML = JSON.stringify(responseData.message);
+            responseElement.innerHTML = responseData.message.replace(/'/g, '"');
         } catch (error) {
             responseElement.innerHTML = 'Error: ' + error.message;
         }
@@ -109,11 +109,10 @@
         let sqlQuery = document.querySelector('#sql-query').value.trim();
         reset();
         try {
-            console.log(`${endpoint}/${sqlQuery}`)
             const response = await fetch(`${endpoint}/${sqlQuery}`);
 
-            const data = await response.json();
-            responseElement.innerHTML = JSON.stringify(data);
+            const responseData = await response.json();
+            responseElement.innerHTML = JSON.stringify(responseData);
         } catch (error) {
             responseElement.innerHTML = 'Error: ' + error.message;
         }
