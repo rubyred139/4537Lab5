@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="write-container">
+        <textarea id="sql-query" name="sql-query" cols="30" rows="5"></textarea>
+        <button type="button" onclick="handleQuery()">Submit</button>
+    </div>
+    <div class="read-container">
+        <p id="response"></p>
+    </div>
+
+    <div>
+        <button type="button" onclick="postAll()">Post</button>
+    </div>
+</body>
+
+</html>
+<script>
+    const data = [
+        {
+            name: "Sara Brown",
+            birthday: "1901-01-01"
+        },
+        {
+            name: "John Smith",
+            birthday: "1941-01-01"
+        },
+        {
+            name: "Jack Ma",
+            birthday: "1961-01-30"
+        },
+        {
+            name: "Elon Musk",
+            birthday: "1999-01-21"
+        },
+
+    ];
+    const endpoint = 'https://comp4357labs.onrender.com/5/api/sql';
+    const responseElement = document.querySelector('#response');
+
+    async function postAll() {
+
+        for (const item of data) {
+            try {
+                const response = await fetch(`${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: `INSERT INTO patients (name, dateOfBirth) VALUES ('${item.name}', '${item.birthday}')`
+                    })
+                });
+                const responseData = await response.json();
+                responseElement.innerHTML = JSON.stringify(responseData.message);
+            } catch (error) {
+                responseElement.innerHTML = 'Error: ' + error.message;
+            }
+        }
+
+    }
+
+    // select * from patients;
+    async function handleQuery() {
+        reset();
+        let sqlQuery = document.querySelector('#sql-query').value.trim();
+        console.log(sqlQuery);
+        if (sqlQuery.toLowerCase().startsWith("select")) {
+            console.log("select");
+            await getQuery();
+        } else if (sqlQuery.toLowerCase().startsWith("insert")) {
+            console.log("insert");
+            await postQuery();
+        } else {
+            await postQuery();
+        }
+    }
+
+
+    async function postQuery() {
+        let sqlQuery = document.querySelector('#sql-query').value.trim();
+        reset();
+
+        try {
+            const response = await fetch(`${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    query: sqlQuery
+                })
+            });
+            const responseData = await response.json();
+            responseElement.innerHTML = JSON.stringify(responseData.message);
+        } catch (error) {
+            responseElement.innerHTML = 'Error: ' + error.message;
+        }
+    }
+
+    async function getQuery() {
+        let sqlQuery = document.querySelector('#sql-query').value.trim();
+        reset();
+        try {
+            console.log(`${endpoint}/${sqlQuery}`)
+            const response = await fetch(`${endpoint}/${sqlQuery}`);
+
+            const data = await response.json();
+            responseElement.innerHTML = JSON.stringify(data);
+        } catch (error) {
+            responseElement.innerHTML = 'Error: ' + error.message;
+        }
+
+    }
+
+    //clear txt
+    function reset() {
+        responseElement.innerHTML = "";
+    }
+
+</script>
