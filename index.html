@@ -67,11 +67,10 @@
 
     }
 
-    // select * from patients;
+
     async function handleQuery() {
         reset();
         let sqlQuery = document.querySelector('#sql-query').value.trim();
-        console.log(sqlQuery);
         if (sqlQuery.toLowerCase().startsWith("select")) {
             console.log("select");
             await getQuery();
@@ -83,7 +82,7 @@
         }
     }
 
-
+    //insert into patients (name, dateOfBirth) values ('John Smith', '1941-01-01');
     async function postQuery() {
         let sqlQuery = document.querySelector('#sql-query').value.trim();
         reset();
@@ -99,12 +98,13 @@
                 })
             });
             const responseData = await response.json();
-            responseElement.innerHTML = responseData.message.replace(/'/g, '"');
+            responseElement.innerHTML = responseData.error ? responseData.error : responseData.message;
         } catch (error) {
             responseElement.innerHTML = 'Error: ' + error.message;
         }
     }
 
+    // select * from patients;
     async function getQuery() {
         let sqlQuery = document.querySelector('#sql-query').value.trim();
         reset();
@@ -112,11 +112,10 @@
             const response = await fetch(`${endpoint}/${sqlQuery}`);
 
             const responseData = await response.json();
-            responseElement.innerHTML = JSON.stringify(responseData[0]);
+            responseElement.innerHTML = responseData.error ? responseData.error : JSON.stringify(responseData);
         } catch (error) {
             responseElement.innerHTML = 'Error: ' + error.message;
         }
-
     }
 
     //clear txt
